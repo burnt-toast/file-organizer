@@ -7,6 +7,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
@@ -17,6 +18,11 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Directory: ", directoryToOrgainze)
+	//Loop over directory and create an array of files and non files
+	itemsInDirectory, _ := ioutil.ReadDir(directoryToOrgainze)
+	for _, item := range itemsInDirectory {
+		fmt.Println(item)
+	}
 }
 
 func getAndValidateDirectoryToOrganzie() (string, error) {
