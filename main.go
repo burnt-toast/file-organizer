@@ -21,7 +21,11 @@ func main() {
 	//Loop over directory and create an array of files and non files
 	itemsInDirectory, _ := ioutil.ReadDir(directoryToOrgainze)
 	for _, item := range itemsInDirectory {
-		fmt.Println(item)
+		if item.IsDir() {
+			errText := "Directories found in path provided " + item.Name()
+			panic(errors.New(errText))
+		}
+		fmt.Println(item.Name())
 	}
 }
 
