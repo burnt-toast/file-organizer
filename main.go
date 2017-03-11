@@ -1,7 +1,5 @@
-/**
-Organize files in a given directory into a new location with the files organized in folders
-by creation date
-*/
+//Organize files in a given directory into a new location with the files organized in folders
+//by creation date
 package main
 
 import (
@@ -9,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 )
 
 func main() {
@@ -20,15 +19,30 @@ func main() {
 	fmt.Println("Directory: ", directoryToOrgainze)
 	//Loop over directory and create an array of files and non files
 	itemsInDirectory, _ := ioutil.ReadDir(directoryToOrgainze)
+
+	mapByDate := make(map[time.Time][]string)
 	for _, item := range itemsInDirectory {
 		if item.IsDir() {
 			errText := "Directories found in path provided " + item.Name()
 			panic(errors.New(errText))
 		}
-		fmt.Println(item.Name())
+		pathToSpecificFile := directoryToOrgainze + "\\" + item.Name()
+		existingList, exists := mapByDate[item.ModTime()]
+		if exists {
+			//add to existing slice
+			existingList = append(existingList, pathToSpecificFile)
+		} else {
+			//create new slice and add
+			mapByDate[item.ModTime()] = []string{pathToSpecificFile}
+		}
+
 	}
+
+	fmt.Println(mapByDate)
 }
 
+//Validate that a path was provided via command line and that the
+//directory exists
 func getAndValidateDirectoryToOrganzie() (string, error) {
 	if len(os.Args) < 2 {
 		return "", errors.New("Missing directory command line arg")
