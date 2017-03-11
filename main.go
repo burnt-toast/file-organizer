@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"time"
+	"strconv"
 )
 
 func main() {
@@ -20,25 +20,34 @@ func main() {
 	//Loop over directory and create an array of files and non files
 	itemsInDirectory, _ := ioutil.ReadDir(directoryToOrgainze)
 
-	mapByDate := make(map[time.Time][]string)
+	mapByDate := make(map[string][]string)
+	fmt.Println("Overall length: ", len(itemsInDirectory))
+	var numberAdded int
+	var numberCreated int
 	for _, item := range itemsInDirectory {
 		if item.IsDir() {
 			errText := "Directories found in path provided " + item.Name()
 			panic(errors.New(errText))
 		}
 		pathToSpecificFile := directoryToOrgainze + "\\" + item.Name()
-		existingList, exists := mapByDate[item.ModTime()]
+		year, month, day := item.ModTime().Date()
+		yyyyMMDD := strconv.Itoa(year) + "-" + month.String() + "-" + strconv.Itoa(day)
+		existingList, exists := mapByDate[yyyyMMDD]
+		//fmt.Println(item.ModTime().Date())
 		if exists {
 			//add to existing slice
+			numberAdded++
 			existingList = append(existingList, pathToSpecificFile)
 		} else {
 			//create new slice and add
-			mapByDate[item.ModTime()] = []string{pathToSpecificFile}
+			numberCreated++
+			mapByDate[yyyyMMDD] = []string{pathToSpecificFile}
 		}
 
 	}
-
-	fmt.Println(mapByDate)
+	fmt.Println("Added: ", numberAdded)
+	fmt.Println("Created: ", numberCreated)
+	//fmt.Println(mapByDate)
 }
 
 //Validate that a path was provided via command line and that the
